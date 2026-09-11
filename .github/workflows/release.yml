@@ -19,7 +19,7 @@ jobs:
       - name: Setup MSVC environment
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Build main app (build.bat: rc + cl)
+      - name: "Build main app (build.bat: rc + cl)"
         shell: cmd
         run: build.bat
 

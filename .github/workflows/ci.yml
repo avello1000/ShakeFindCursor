@@ -83,4 +83,5 @@ jobs:
           cl /nologo /W4 /analyze /EHsc /utf-8 /DUNICODE /D_UNICODE /external:env:INCLUDE /external:W0 /c e2e-test.cpp > e2e.log 2>&1
           cl /nologo /W4 /analyze /EHsc /utf-8 /DUNICODE /D_UNICODE /external:env:INCLUDE /external:W0 /c marquee-test.cpp > marquee.log 2>&1
           findstr /R /C:"^main.cpp.*warning" /C:"^e2e-test.cpp.*warning" /C:"^marquee-test.cpp.*warning" main.log e2e.log marquee.log
-          if errorlevel 1 (echo Static analysis: no findings in our sources) else (echo ::error::Static analysis findings above & exit /b 1)
+          if %errorlevel%==0 exit /b 1
+          echo Static analysis: no findings in our sources
