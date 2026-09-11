@@ -6,11 +6,16 @@ setlocal
 set "SRC=%~dp0"
 cd /d "%SRC%"
 
-set "VCVARS=C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
-if exist "%VCVARS%" (
-    call "%VCVARS%"
-) else (
-    echo [ERROR] vcvars64.bat not found. Edit "VCVARS" in build.bat to point at your MSVC install.
+rem Locate vcvars64.bat: ask vswhere first (covers Community/Professional/
+rem Enterprise/BuildTools), then fall back to well-known paths.
+set "VCVARS="
+for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath 2^>nul`) do (
+    if exist "%%i\VC\Auxiliary\Build\vcvars64.bat" set "VCVARS=%%i\VC\Auxiliary\Build\vcvars64.bat"
+)
+if not defined VCVARS set "VCVARS=C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+if not exist "%VCVARS%" (
+    echo [ERROR] vcvars64.bat not found. Install the "Desktop development with C++"
+    echo         workload, or edit "VCVARS" in build.bat to point at your MSVC install.
     exit /b 1
 )
 
