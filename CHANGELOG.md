@@ -25,6 +25,11 @@
 - **GitHub Actions CI**：每次推送到 main 自动构建主程序与两个测试工具（windows-latest + MSVC）。
 - **项目规范化**：MIT LICENSE、本变更日志、issue 模板、`.editorconfig`。
 
+### Fixed
+
+- **时间链路升级为 64 位**（`GetTickCount` → `GetTickCount64`，静态分析 C28159）：彻底消除
+  连续运行 49.7 天后 DWORD 回绕的隐患；`wWinMain` 补齐 SAL 参数批注（C28251）。
+
 ### Changed
 
 - **隐私加固**：README 中的跑马灯预览图由「屏幕差值截图」替换为按程序同款算法离线渲染的
