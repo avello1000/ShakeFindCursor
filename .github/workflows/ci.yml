@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build (windows-latest)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Build main app (build.bat: rc + cl)
+        shell: cmd
+        run: build.bat
+
+      - name: Build test tools
+        shell: cmd
+        run: |
+          cl /nologo /EHsc /O2 /utf-8 /DUNICODE /D_UNICODE e2e-test.cpp /link user32.lib gdi32.lib shell32.lib /SUBSYSTEM:CONSOLE /OUT:e2e-test.exe
+          cl /nologo /EHsc /O2 /utf-8 /DUNICODE /D_UNICODE marquee-test.cpp /link user32.lib gdi32.lib gdiplus.lib /SUBSYSTEM:CONSOLE /OUT:marquee-test.exe
+
+      - name: Upload main app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ShakeFindCursor-win-x64
+          path: ShakeFindCursor.exe
+          if-no-files-found: error
