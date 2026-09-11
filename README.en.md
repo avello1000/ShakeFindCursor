@@ -20,7 +20,7 @@ A tiny Windows tray utility that mimics macOS **"Shake mouse pointer to locate"*
 - 🧯 **One-click restore** — double-click `restore-cursor.bat`, or run `ShakeFindCursor.exe --restore`.
 - ✅ **No admin rights needed** — `SetSystemCursor` works from a normal process; the manifest is `asInvoker`, so no UAC prompt.
 
-![Siri-style RGB border glow (difference image — only the glow itself)](docs/screenshot-marquee.png)
+![Siri-style RGB border glow — rendered offline by tools/make_marquee_preview.py using the same algorithm as the app (no screen content)](docs/screenshot-marquee.png)
 
 ![Pointer rendering at five sizes; red crosses mark the hotspot](docs/screenshot-pointer.png)
 

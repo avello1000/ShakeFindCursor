@@ -144,7 +144,7 @@ macOS 的 shake-to-find **只有"来回摆动"这一条触发路径**，它不�
 
 **画面**：Siri 唤醒那种**整圈 RGB 环绕流光** —— 色相沿四边铺满一整圈彩虹并随时间流动（2.6 秒/圈），叠加 3 个沿边流动的明暗亮斑；每条光带最外几像素掺白做出"灯丝"亮心，向内按 σ = 厚度×0.28 高斯衰减成柔和辉光。
 
-![Siri 风格 RGB 环绕流光（差值图，只有光带本身）](docs/screenshot-marquee.png)
+![Siri 风格 RGB 环绕流光 —— 由 tools/make_marquee_preview.py 按程序同款算法离线渲染，不含任何屏幕内容](docs/screenshot-marquee.png)
 
 ![指针外观：五档尺寸渲染，红叉为热点位置](docs/screenshot-pointer.png)
 
