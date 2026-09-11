@@ -6,6 +6,10 @@
 
 Windows 上**快速来回晃动**鼠标，指针平滑放大到约 3 倍，方便快速定位丢失的指针；手停下来后自动平滑缩回原大小。对应 macOS 的 **"Shake mouse pointer to locate"**。
 
+## English
+
+ShakeFindCursor is a tiny Windows tray utility that mimics macOS **"Shake mouse pointer to locate"**: shake your mouse quickly and the pointer smoothly enlarges (~3×) so you can find it; it shrinks back when you stop. On multi-monitor setups, the screen the pointer is on lights up with a **Siri-style RGB border glow**. Single small binary, no admin rights required. (Documentation is in Chinese; the parameter table below is self-explanatory.)
+
 ## 功能
 
 - 🔍 **晃动触发**：快速来回晃几次即放大（对齐 macOS 手感：**单向移动再快也不会触发**）。
@@ -138,6 +142,10 @@ macOS 的 shake-to-find **只有"来回摆动"这一条触发路径**，它不�
 
 **画面**：Siri 唤醒那种**整圈 RGB 环绕流光** —— 色相沿四边铺满一整圈彩虹并随时间流动（2.6 秒/圈），叠加 3 个沿边流动的明暗亮斑；每条光带最外几像素掺白做出"灯丝"亮心，向内按 σ = 厚度×0.28 高斯衰减成柔和辉光。
 
+![Siri 风格 RGB 环绕流光（差值图，只有光带本身）](docs/screenshot-marquee.png)
+
+![指针外观：五档尺寸渲染，红叉为热点位置](docs/screenshot-pointer.png)
+
 **怎么实现的**：
 
 - 每条边一个 `WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE` 的**穿透置顶**窗口，用 `UpdateLayeredWindow` 做逐像素 alpha 合成 —— 只有这样才能画出真正平滑的光晕。
@@ -181,7 +189,7 @@ macOS 的 shake-to-find **只有"来回摆动"这一条触发路径**，它不�
 - 跑马灯边条是 TOPMOST，所以**底部光带会压在任务栏上**（不会盖住任务栏的按钮，只在其上叠一层光）。边条用完只隐藏不销毁，占约 1MB。
 - 跑马灯只在**光标所在的那块屏**上出现；放大期间把指针甩到另一块屏，它会跟过去并重新淡入。
 
-仓库只保留源码与文本，不含二进制和图片。指针外观（23 / 32 / 48 / 72 / 96 px 各档渲染，红叉为热点位置）与跑马灯效果，用仓库内自带的两个测试工具即可在本地复现（见下节）。
+仓库只保留源码、文本与文档截图；二进制构建产物不入库（请到 [Releases](https://github.com/avello1000/ShakeFindCursor/releases) 下载，或用 `build.bat` 自行构建）。指针外观与跑马灯效果也可以用仓库内自带的两个测试工具在本地复现（见下节）。
 
 ## 两个验证工具
 
@@ -216,6 +224,14 @@ marquee-test.exe
 ## 变更日志
 
 见 [CHANGELOG.md](CHANGELOG.md)。
+
+## 贡献
+
+欢迎报 bug、提建议、改代码 —— 见 [CONTRIBUTING.md](CONTRIBUTING.md)（含构建与验证流程）。
+
+## 安全
+
+与系统交互面及报告渠道见 [SECURITY.md](SECURITY.md)。
 
 ## 许可证
 

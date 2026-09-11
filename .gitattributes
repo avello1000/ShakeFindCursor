@@ -1,0 +1,18 @@
+# 统一换行与二进制标记（解决多平台协作时的 CRLF/LF 混乱）
+* text=auto
+
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+
+*.cpp  text eol=lf
+*.h    text eol=lf
+*.rc   text eol=lf
+*.py   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.md   text eol=lf
+*.txt  text eol=lf
+
+*.png  binary
+*.ico  binary
+*.zip  binary
