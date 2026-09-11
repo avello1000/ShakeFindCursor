@@ -3,6 +3,15 @@
 本项目的所有重要变更都记录在此文件中。
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本遵循语义化版本（SemVer）。
 
+## [Unreleased]
+
+### Added
+
+- **自动发版工作流**：推送 `v*` 标签自动构建、打包便携 ZIP 并发布 GitHub Release。
+- **CI 冒烟测试**：构建后在干净环境中启动应用并确认进程存活。
+- **CONTRIBUTING.md** 与 **SECURITY.md**、`.gitattributes`（统一换行/二进制标记）。
+- README 内嵌预览截图（`docs/`）与英文简介。
+
 ## [1.1.0] - 2026-09-11
 
 ### Added

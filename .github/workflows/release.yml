@@ -1,0 +1,45 @@
+name: Release
+
+# 推送 v* 标签 → 自动构建 → 打包便携 ZIP → 创建 GitHub Release 并上传资产。
+# 日常使用：git tag v1.x.x && git push origin v1.x.x
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish release
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Build main app (build.bat: rc + cl)
+        shell: cmd
+        run: build.bat
+
+      - name: Package portable ZIP with SHA256
+        shell: pwsh
+        run: |
+          $ProgressPreference = 'SilentlyContinue'
+          $v = "${{ github.ref_name }}"
+          Compress-Archive -Path "ShakeFindCursor.exe","restore-cursor.bat","README.md","LICENSE","CHANGELOG.md" `
+            -DestinationPath "ShakeFindCursor-$v-win-x64.zip" -Force
+          $h = (Get-FileHash "ShakeFindCursor-$v-win-x64.zip" -Algorithm SHA256).Hash.ToLower()
+          Set-Content -Path "SHA256SUMS.txt" -Value "$h  ShakeFindCursor-$v-win-x64.zip" -Encoding ASCII -NoNewline
+          Get-Content SHA256SUMS.txt
+
+      - name: Create release and upload assets
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $v = "${{ github.ref_name }}"
+          gh release create "$v" "ShakeFindCursor-$v-win-x64.zip" SHA256SUMS.txt `
+            --title "ShakeFindCursor $v" `
+            --notes "便携包：解压即用（ShakeFindCursor.exe + restore-cursor.bat）。完整性校验见 SHA256SUMS.txt。变更内容见 [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md)。"
