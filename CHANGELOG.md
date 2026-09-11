@@ -7,6 +7,10 @@
 
 ### Added
 
+- **CMake 支持**（`CMakeLists.txt`）：与 `build.bat` 产物一致，CI 增加独立 CMake 构建作业互相印证。
+- **静态分析纳入 CI**：MSVC `/analyze` 作业（`/external:W0` 抑制 SDK 噪音，只对我们自己的源文件判失败）；
+  顺带修掉两处真实发现 —— 配置常量比较（改 `static_assert`）与有意的默认关闭通道（局部豁免并注明）。
+- **README.en.md** 完整英文文档，与中文版双语互链。
 - **自动发版工作流**：推送 `v*` 标签自动构建、打包便携 ZIP 并发布 GitHub Release。
 - **CI 冒烟测试**：构建后在干净环境中启动应用并确认进程存活。
 - **CONTRIBUTING.md** 与 **SECURITY.md**、`.gitattributes`（统一换行/二进制标记）。

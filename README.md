@@ -1,5 +1,7 @@
 # ShakeFindCursor — 摇动鼠标放大指针（仿 macOS）
 
+简体中文 | [English](README.en.md)
+
 [![CI](https://github.com/avello1000/ShakeFindCursor/actions/workflows/ci.yml/badge.svg)](https://github.com/avello1000/ShakeFindCursor/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/avello1000/ShakeFindCursor)](https://github.com/avello1000/ShakeFindCursor/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
