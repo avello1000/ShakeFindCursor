@@ -75,13 +75,21 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
 
       # SDK/第三方头文件的已知噪音（如 GdiplusFontCollection.h 的 C6385、winreg.h 的
-      # C6553）不在本仓库的控制范围内，判定只看【我们自己的源文件】产出的警告行。
+      # C6553）不在本仓库的控制范围内，判定只看【我们自己的源文件】产出的警告/错误行
+      # （cl 警告行格式为 `源.cpp(行号) : warning Cxxxx`；SDK 头的行是 .h(行号)，天然区分）。
       - name: Analyze sources
         shell: cmd
         run: |
           cl /nologo /W4 /analyze /EHsc /utf-8 /DUNICODE /D_UNICODE /external:env:INCLUDE /external:W0 /c main.cpp > main.log 2>&1
           cl /nologo /W4 /analyze /EHsc /utf-8 /DUNICODE /D_UNICODE /external:env:INCLUDE /external:W0 /c e2e-test.cpp > e2e.log 2>&1
           cl /nologo /W4 /analyze /EHsc /utf-8 /DUNICODE /D_UNICODE /external:env:INCLUDE /external:W0 /c marquee-test.cpp > marquee.log 2>&1
-          findstr /R /C:"^main.cpp.*warning" /C:"^e2e-test.cpp.*warning" /C:"^marquee-test.cpp.*warning" main.log e2e.log marquee.log
-          if %errorlevel%==0 exit /b 1
-          echo Static analysis: no findings in our sources
+          exit /b 0
+
+      - name: Check analysis findings (our sources only)
+        shell: bash
+        run: |
+          if grep -E "\.cpp\([0-9]+\) : (warning|error)" main.log e2e.log marquee.log; then
+            echo "::error::Static analysis findings in our sources"
+            exit 1
+          fi
+          echo "Static analysis: clean for our sources"
