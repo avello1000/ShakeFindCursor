@@ -1,5 +1,9 @@
 # ShakeFindCursor — 摇动鼠标放大指针（仿 macOS）
 
+[![CI](https://github.com/avello1000/ShakeFindCursor/actions/workflows/ci.yml/badge.svg)](https://github.com/avello1000/ShakeFindCursor/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/avello1000/ShakeFindCursor)](https://github.com/avello1000/ShakeFindCursor/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Windows 上**快速来回晃动**鼠标，指针平滑放大到约 3 倍，方便快速定位丢失的指针；手停下来后自动平滑缩回原大小。对应 macOS 的 **"Shake mouse pointer to locate"**。
 
 ## 功能
@@ -22,7 +26,7 @@ Windows 上**快速来回晃动**鼠标，指针平滑放大到约 3 倍，方�
 build.bat
 ```
 
-产物为 `ShakeFindCursor.exe`。脚本依赖本机 MSVC（VS2022 Build Tools），编译失败会明确报错退出。
+产物为 `ShakeFindCursor.exe`（含 `app.rc` 编译的版本信息与应用图标，`rc /c 65001` 支持 UTF-8 中文描述）。脚本依赖本机 MSVC（VS2022 Build Tools），编译失败会明确报错退出。每次推送到 main 都会由 [GitHub Actions](.github/workflows/ci.yml) 在 Windows 环境自动构建并上传产物。
 
 ## 使用
 
@@ -208,3 +212,11 @@ marquee-test.exe
 > ⚠️ 这两支工具在测「光标尺寸」和「屏幕坐标」时都要留意 DPI：
 > 读**系统箭头槽**（`LoadImage(IDC_ARROW)`）才准，读"当前显示的光标"不可靠；
 > 抓屏工具本身必须声明 **per-monitor DPI aware**，否则多屏 + 高缩放时拿到的是错位副本，会得出完全错误的结论（我就因此误判过"右边条没渲染"）。
+
+## 变更日志
+
+见 [CHANGELOG.md](CHANGELOG.md)。
+
+## 许可证
+
+本项目基于 [MIT License](LICENSE) 开源。
