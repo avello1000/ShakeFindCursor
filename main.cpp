@@ -1049,7 +1049,10 @@ static bool Built()      { return g_built; }
 static bool Busy()       { return g_built && (g_on || g_alpha > 0.004f); }
 static int  MonitorCount(){ return g_monCount; }
 static bool UserOn()     { return g_userOn; }
-static double FrameSec() { return 1.0 / (double)(Config::kMarqueeFps > 0 ? Config::kMarqueeFps : 60); }
+static double FrameSec() {
+    static_assert(Config::kMarqueeFps > 0, "kMarqueeFps 必须为正，否则 1.0/x 除零");
+    return 1.0 / (double)Config::kMarqueeFps;
+}
 
 // 托盘菜单切换总开关；关掉时立刻收起
 static void SetUserOn(bool on) {
@@ -1186,8 +1189,13 @@ static void Tick() {
 
         if (!moved) return;             // 没动就不可能触发，直接走
         // 命中任一【已启用】的通道即放大。默认只启用晃动通道（对齐 macOS）。
+        // kEnableSwipe 是留给用户的编译期开关：当前默认 false 时下面的与短路
+        // 恒为假 —— 这是有意的配置形态，故局部关闭该静态分析警告。
+#pragma warning(push)
+#pragma warning(disable : 6237)         // C6237: (false && expr)，见上
         if ((Config::kEnableSwipe && DetectSwipe()) || DetectShake())
             OnTrigger(now);
+#pragma warning(pop)
         return;
     }
 

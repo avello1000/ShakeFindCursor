@@ -43,3 +43,44 @@ jobs:
           name: ShakeFindCursor-win-x64
           path: ShakeFindCursor.exe
           if-no-files-found: error
+
+  cmake-build:
+    name: CMake build (windows-latest)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure (Visual Studio generator, x64)
+        run: cmake -S . -B build -A x64
+        shell: cmd
+
+      - name: Build (Release)
+        run: cmake --build build --config Release
+        shell: cmd
+
+      - name: Upload CMake artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ShakeFindCursor-cmake-win-x64
+          path: build/Release/ShakeFindCursor.exe
+          if-no-files-found: error
+
+  static-analysis:
+    name: Static analysis (/analyze)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+
+      # SDK/第三方头文件的已知噪音（如 GdiplusFontCollection.h 的 C6385、winreg.h 的
+      # C6553）不在本仓库的控制范围内，判定只看【我们自己的源文件】产出的警告行。
+      - name: Analyze sources
+        shell: cmd
+        run: |
+          cl /nologo /W4 /analyze /EHsc /utf-8 /DUNICODE /D_UNICODE /external:env:INCLUDE /external:W0 /c main.cpp > main.log 2>&1
+          cl /nologo /W4 /analyze /EHsc /utf-8 /DUNICODE /D_UNICODE /external:env:INCLUDE /external:W0 /c e2e-test.cpp > e2e.log 2>&1
+          cl /nologo /W4 /analyze /EHsc /utf-8 /DUNICODE /D_UNICODE /external:env:INCLUDE /external:W0 /c marquee-test.cpp > marquee.log 2>&1
+          findstr /R /C:"^main.cpp.*warning" /C:"^e2e-test.cpp.*warning" /C:"^marquee-test.cpp.*warning" main.log e2e.log marquee.log
+          if errorlevel 1 (echo Static analysis: no findings in our sources) else (echo ::error::Static analysis findings above & exit /b 1)
