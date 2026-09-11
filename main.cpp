@@ -100,6 +100,9 @@
 // 5) 顺带修掉位图创建里的 use-after-ReleaseDC（原代码 ReleaseDC 后又用
 //    该 HDC 调 SetDIBits），改用 CreateDIBSection 直接绘制，免去 GDI+/DIB 来回拷贝。
 
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x0A00   // GetTickCount64 等需要 Vista+ 声明
+#endif
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
@@ -216,7 +219,7 @@ static bool      g_enabled  = true;
 static bool      g_shutdown = false;
 
 // 轨迹采样
-struct Sample { POINT pt; DWORD when; };
+struct Sample { POINT pt; ULONGLONG when; };
 static std::deque<Sample> g_history;
 
 // 缩放状态机
@@ -226,8 +229,8 @@ static float g_animFrom    = Config::kScaleMin;  // 本段动画起点
 static float g_animTo      = Config::kScaleMin;  // 本段动画终点
 static bool  g_animActive  = false;              // 是否正在出帧
 static bool  g_enlarged    = false;              // 是否处于"放大"状态
-static DWORD g_lastTrigger = 0;                  // 最近一次触发时刻
-static DWORD g_lastActive  = 0;                  // 最近一次"运动超过平缓阈值"的时刻
+static ULONGLONG g_lastTrigger = 0;               // 最近一次触发时刻
+static ULONGLONG g_lastActive  = 0;               // 最近一次"运动超过平缓阈值"的时刻
 static int   g_nativePx    = Config::kNativePx;  // 运行时校准的原生光标边长
 static int   g_installedPx = 0;                  // 当前已装进系统的自定义光标边长；0 = 未接管
 
@@ -270,7 +273,7 @@ static std::wstring GetExePath();
 // ===========================================================================
 // 轨迹与运动学统计
 // ===========================================================================
-static void RecordMove(POINT pt, DWORD now) {
+static void RecordMove(POINT pt, ULONGLONG now) {
     g_history.push_back({pt, now});
 
     // 按时间裁剪
@@ -328,7 +331,7 @@ static Motion WindowStats(double winSec) {
     const size_t n = g_history.size();
     if (n < 3) return m;
 
-    const DWORD now  = g_history.back().when;
+    const ULONGLONG now = g_history.back().when;
     const DWORD span = (DWORD)(winSec * 1000.0 + 0.5);
 
     // 从末尾往前找窗口内的第一个样本
@@ -1133,7 +1136,7 @@ static void RefreshMonitorCount() {
 }  // namespace Marquee
 
 // 触发放大（已在放大态时只刷新计时，不重启动画）
-static void OnTrigger(DWORD now) {
+static void OnTrigger(ULONGLONG now) {
     g_lastTrigger = now;
     g_lastActive  = now;
 
@@ -1157,7 +1160,7 @@ static void Tick() {
     POINT pt;
     if (!::GetCursorPos(&pt)) return;
 
-    const DWORD now = ::GetTickCount();
+    const ULONGLONG now = ::GetTickCount64();   // 64 位，无 49 天回绕问题
     const bool moved = (pt.x != g_lastPt.x || pt.y != g_lastPt.y);
     bool monChanged = false;
     if (moved) {
@@ -1435,7 +1438,7 @@ static void SpawnWatchdogAsync() {
 // ===========================================================================
 // 入口
 // ===========================================================================
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int) {
+int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ PWSTR pCmdLine, _In_ int) {
     // ---- 命令行分支 ----
     if (pCmdLine && *pCmdLine) {
         if (wcsstr(pCmdLine, L"--watchdog")) {
