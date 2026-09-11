@@ -1,0 +1,36 @@
+// app.rc — ShakeFindCursor 的版本信息与应用图标资源
+//
+// 在文件资源管理器的「属性 → 详细信息」里能看到产品名与版本；
+// 托盘与 exe 文件本身使用 1 ICON（app.ico，由 tools/make_icon.py 生成）。
+#include <windows.h>
+
+1 ICON "app.ico"
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION    1,1,0,0
+ PRODUCTVERSION 1,1,0,0
+ FILEFLAGSMASK  0x3fL
+ FILEFLAGS      0x0L
+ FILEOS         VOS_NT_WINDOWS32
+ FILETYPE       VFT_APP
+ FILESUBTYPE    0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080404b0"
+        BEGIN
+            VALUE "CompanyName",      "ShakeFindCursor Project"
+            VALUE "FileDescription",  "摇动鼠标放大指针定位（仿 macOS Shake mouse pointer to locate）"
+            VALUE "FileVersion",      "1.1.0"
+            VALUE "InternalName",     "ShakeFindCursor"
+            VALUE "LegalCopyright",   "MIT License"
+            VALUE "OriginalFilename", "ShakeFindCursor.exe"
+            VALUE "ProductName",      "ShakeFindCursor"
+            VALUE "ProductVersion",   "1.1.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0804, 1200
+    END
+END

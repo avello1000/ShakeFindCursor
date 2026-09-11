@@ -1311,8 +1311,14 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
             g_nid.uID    = 1;
             g_nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
             g_nid.uCallbackMessage = WM_TRAYICON;
-            g_nid.hIcon  = (HICON)::LoadImage(nullptr, MAKEINTRESOURCE(OCR_NORMAL),
-                                              IMAGE_CURSOR, 0, 0, LR_SHARED);
+            // 托盘图标优先用内嵌的应用图标（app.ico，资源 ID 1）；
+            // 资源缺失时退回系统箭头图形，再退回通用应用图标。
+            g_nid.hIcon = (HICON)::LoadImageW(g_hInst, MAKEINTRESOURCEW(1), IMAGE_ICON,
+                                              ::GetSystemMetrics(SM_CXICON),
+                                              ::GetSystemMetrics(SM_CYICON), LR_SHARED);
+            if (!g_nid.hIcon)
+                g_nid.hIcon = (HICON)::LoadImage(nullptr, MAKEINTRESOURCE(OCR_NORMAL),
+                                                 IMAGE_CURSOR, 0, 0, LR_SHARED);
             if (!g_nid.hIcon) g_nid.hIcon = ::LoadIcon(nullptr, IDI_APPLICATION);
             wcscpy_s(g_nid.szTip, L"ShakeFindCursor — 摇动鼠标放大指针");
             ::Shell_NotifyIconW(NIM_ADD, &g_nid);
@@ -1499,6 +1505,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int) {
     wc.cbSize        = sizeof(wc);
     wc.lpfnWndProc   = WndProc;
     wc.hInstance     = hInstance;
+    wc.hIcon         = (HICON)::LoadImageW(hInstance, MAKEINTRESOURCEW(1),
+                                           IMAGE_ICON, 0, 0, LR_SHARED);
+    wc.hIconSm       = (HICON)::LoadImageW(hInstance, MAKEINTRESOURCEW(1), IMAGE_ICON,
+                                           ::GetSystemMetrics(SM_CXSMICON),
+                                           ::GetSystemMetrics(SM_CYSMICON), LR_SHARED);
     wc.lpszClassName = L"ShakeFindCursorWnd";
     if (!::RegisterClassExW(&wc)) {
         Gdiplus::GdiplusShutdown(gdiplusToken);
